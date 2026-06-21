@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { Search, Swords, Filter, Loader2, User } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -14,12 +14,18 @@ export const Route = createFileRoute("/challenges/public")({
       { name: "description", content: "Browse live public Valorant challenges and join one that fits your skill and stake." },
     ],
   }),
+  // INSTANT AUTH GUARD: Runs before the page even loads
+  beforeLoad: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: PublicLobby,
 });
 
 const STAKE_FILTERS = ["All", "≤ ₹500", "₹500–₹2K", "₹2K+"];
 
-// Helper to format money
 const formatINR = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -35,11 +41,9 @@ function PublicLobby() {
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch real matches from Supabase
   useEffect(() => {
     async function fetchLiveMatches() {
       try {
-        // 1. Get all matches that are public and waiting for an opponent
         const { data: matchesData, error } = await supabase
           .from("matches")
           .select("*")
@@ -52,14 +56,10 @@ function PublicLobby() {
           return;
         }
 
-        // 2. Filter the matches so they ONLY show up on the public feed when ready
         const visibleMatches = matchesData.filter(match => {
           if (match.tournament_format === 'ffa') {
-            // For 10-Player Deathmatch: Show it as long as there is at least 1 person and it isn't full
             return match.current_players >= 1 && match.current_players < match.max_players;
           } else {
-            // For 1v1, 2v2, 5v5: ONLY show if Team 1 is exactly full (current_players == max_players / 2)
-            // Example: For a 5v5 (max_players 10), it only shows when current_players is exactly 5.
             return match.current_players === (match.max_players / 2);
           }
         });
@@ -70,20 +70,17 @@ function PublicLobby() {
           return;
         }
 
-        // 3. Fetch the Riot IDs for the players who created these visible matches
         const creatorIds = [...new Set(visibleMatches.map(m => m.creator_id))];
         const { data: profilesData } = await supabase
           .from("profiles")
           .select("id, riot_id, tagline")
           .in("id", creatorIds);
 
-        // Turn profiles into an easy-to-read dictionary map
         const profilesMap = (profilesData || []).reduce((acc: any, profile: any) => {
           acc[profile.id] = profile;
           return acc;
         }, {});
 
-        // 4. Combine the match data with the creator's profile data
         const enrichedMatches = visibleMatches.map(m => ({
           ...m,
           creator: profilesMap[m.creator_id] || { riot_id: "Unknown", tagline: "" }
@@ -100,12 +97,11 @@ function PublicLobby() {
     fetchLiveMatches();
   }, []);
 
-  // Filter the live data based on the user's search and stake buttons
   const filtered = useMemo(() => {
     return matches.filter((c) => {
       const matchQ = c.creator.riot_id.toLowerCase().includes(q.toLowerCase());
       
-      const feeInRupees = c.entry_fee / 100; // Convert from paise back to rupees
+      const feeInRupees = c.entry_fee / 100;
       
       const matchF =
         filter === "All" ||
@@ -134,7 +130,6 @@ function PublicLobby() {
           </Link>
         </div>
 
-        {/* Search + filter */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -162,7 +157,6 @@ function PublicLobby() {
           </div>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
             <Loader2 className="size-8 animate-spin text-primary" />
@@ -170,7 +164,6 @@ function PublicLobby() {
           </div>
         )}
 
-        {/* Grid */}
         {!loading && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((c) => (
@@ -213,7 +206,6 @@ function PublicLobby() {
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && filtered.length === 0 && (
           <div className="text-center py-20 border border-dashed border-border rounded-lg bg-card/50">
             <User className="size-10 text-muted-foreground/50 mx-auto mb-3" />

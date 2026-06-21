@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 import { Swords, Users, Globe2, AlertCircle, Trophy, Medal } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,13 @@ export const Route = createFileRoute("/challenges/create")({
   head: () => ({
     meta: [{ title: "Host Tournament · Kabaoo" }],
   }),
+  // INSTANT AUTH GUARD
+  beforeLoad: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: CreateChallenge,
 });
 
@@ -41,18 +48,6 @@ const formatINR = (amount: number) => {
 
 function CreateChallenge() {
   const navigate = useNavigate();
-  
-  // Auth Guard: Bounce unauthenticated users to login instantly
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate({ to: "/auth", replace: true });
-      }
-    };
-    checkAuth();
-  }, [navigate]);
-
   const [fee, setFee] = useState<number | "">(500);
   const [format, setFormat] = useState(TOURNAMENT_FORMATS[0]);
   const [gameMode, setGameMode] = useState(GAME_MODES[0]);
@@ -74,8 +69,7 @@ function CreateChallenge() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        navigate({ to: "/auth" });
-        return;
+        throw new Error("You must be logged in to create a tournament.");
       }
 
       const { data: profile } = await supabase

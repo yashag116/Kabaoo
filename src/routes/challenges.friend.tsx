@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 import { Users, Copy, CheckCircle2, ArrowRight, ShieldAlert, Swords, AlertCircle, Loader2, Globe2, Trophy, Medal, QrCode } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,13 @@ export const Route = createFileRoute("/challenges/friend")({
   head: () => ({
     meta: [{ title: "Private Match · Kabaoo" }],
   }),
+  // INSTANT AUTH GUARD
+  beforeLoad: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: FriendChallengePage,
 });
 
@@ -51,19 +58,7 @@ const generateCode = () => {
 
 function FriendChallengePage() {
   const navigate = useNavigate();
-
-  // Auth Guard: Bounce unauthenticated users to login instantly
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate({ to: "/auth", replace: true });
-      }
-    };
-    checkAuth();
-  }, [navigate]);
   
-  // Unified Creation State
   const [fee, setFee] = useState<number | "">(500);
   const [format, setFormat] = useState(TOURNAMENT_FORMATS[0]);
   const [gameMode, setGameMode] = useState(GAME_MODES[0]);
@@ -76,7 +71,6 @@ function FriendChallengePage() {
   const [generatedCode, setGeneratedCode] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
-  // Join State
   const [joinCode, setJoinCode] = useState("");
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState("");
@@ -99,10 +93,7 @@ function FriendChallengePage() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate({ to: "/auth" });
-        return;
-      }
+      if (!user) throw new Error("You must be logged in to create a tournament.");
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -119,7 +110,6 @@ function FriendChallengePage() {
       const code = generateCode();
       const prizePoolInPaise = prizePool * 100;
 
-      // 1. Create the private match
       const { data: match, error: matchError } = await supabase
         .from("matches")
         .insert({
@@ -140,7 +130,6 @@ function FriendChallengePage() {
 
       if (matchError || !match) throw new Error("Failed to secure private tournament lobby.");
 
-      // 2. Deduct the host's entry fee immediately
       const { error: balanceError } = await supabase
         .from("profiles")
         .update({ balance: profile.balance - feeInPaise })
@@ -148,7 +137,6 @@ function FriendChallengePage() {
 
       if (balanceError) throw new Error("Failed to process your entry fee.");
 
-      // 3. Add the host as the first participant
       const { error: participantError } = await supabase
         .from("participants")
         .insert({
@@ -223,7 +211,6 @@ function FriendChallengePage() {
             <TabsTrigger value="join" className="text-base font-semibold transition-all duration-300">Join with Match Key</TabsTrigger>
           </TabsList>
 
-          {/* HOST LOBBY TAB */}
           <TabsContent value="create" className="space-y-6">
             {!createdMatchId ? (
               <form onSubmit={handleCreate} className="rounded-lg border border-border bg-card p-6 md:p-8 shadow-[var(--shadow-card)] space-y-8 flex flex-col">
