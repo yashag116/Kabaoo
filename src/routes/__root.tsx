@@ -17,14 +17,14 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-display font-bold text-primary">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground uppercase">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           This match doesn't exist. Head back to the lobby.
         </p>
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-none bg-primary px-4 py-2 text-sm font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90"
           >
             Go home
           </Link>
@@ -44,7 +44,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-xl font-display font-bold tracking-tight text-foreground uppercase">
           Something broke mid-match
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -56,15 +56,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-none bg-primary px-4 py-2 text-sm font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90"
           >
             Try again
           </button>
-          
-          {/* THE FIX IS RIGHT HERE: Added the missing <a tag */}
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-none border-2 border-foreground bg-background px-4 py-2 text-sm font-bold uppercase tracking-wider text-foreground hover:bg-foreground hover:text-background transition-colors"
           >
             Go home
           </a>
@@ -85,22 +83,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Kabaoo lets Valorant players compete in 1v1 skill-based challenges for real-money prize pools. Secure wallet, fast withdrawals, global leaderboards.",
       },
-      { name: "author", content: "Kabaoo" },
-      { property: "og:title", content: "Kabaoo — Skill-based Valorant Challenges for Real Prize Pools" },
-      {
-        property: "og:description",
-        content:
-          "Compete in skill-based Valorant challenges against friends or players worldwide.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Kabaoo" },
-      { name: "twitter:title", content: "Kabaoo — Skill-based Valorant Challenges for Real Prize Pools" },
-      { name: "description", content: "Compete in skill-based 1v1 Valorant challenges for real-money prize pools on Kabaoo." },
-      { property: "og:description", content: "Compete in skill-based 1v1 Valorant challenges for real-money prize pools on Kabaoo." },
-      { name: "twitter:description", content: "Compete in skill-based 1v1 Valorant challenges for real-money prize pools on Kabaoo." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7184c999-3afb-45b5-94e0-14add2eef1a6/id-preview-6eb9545a--92b1aa5a-7ff9-418e-9e2c-90967a2bb38d.lovable.app-1781772110393.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7184c999-3afb-45b5-94e0-14add2eef1a6/id-preview-6eb9545a--92b1aa5a-7ff9-418e-9e2c-90967a2bb38d.lovable.app-1781772110393.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -108,7 +90,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap",
+        // Replaced Rajdhani with Oswald for the bold esports look
+        href: "https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap",
       },
     ],
   }),
@@ -119,8 +102,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Removed className="dark" from HTML
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

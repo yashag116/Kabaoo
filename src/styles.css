@@ -2,23 +2,21 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 /*
- * ClutchUp — Professional Esports Design System
- * Deep Slate + Electric Purple + Teal accent. All tokens in oklch.
+ * Kabaoo — Tactical Esports Design System
+ * Crisp White + Pitch Black + Valorant Red.
  */
 
 @theme inline {
-  --font-display: "Rajdhani", "Inter", system-ui, sans-serif;
+  --font-display: "Oswald", "Inter", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -45,78 +43,59 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-neon: var(--neon);
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
 }
 
-:root,
-.dark {
-  --radius: 0.75rem; /* Softened from 0.5rem to give a modern, premium feel */
+:root {
+  --radius: 0rem; /* Razor sharp edges */
 
-  /* Backgrounds — Deep slate gray (No harsh blacks) */
-  --background: oklch(0.18 0.02 265);
-  --foreground: oklch(0.97 0.01 265);
+  /* Backgrounds — Crisp off-white & pure white */
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.15 0 0); /* Near black */
 
-  --surface: oklch(0.22 0.02 265);
-  --surface-elevated: oklch(0.26 0.03 265);
+  --surface: oklch(0.96 0 0);
+  --surface-elevated: oklch(1 0 0);
 
-  --card: oklch(0.22 0.02 265);
-  --card-foreground: oklch(0.97 0.01 265);
-  --popover: oklch(0.26 0.03 265);
-  --popover-foreground: oklch(0.97 0.01 265);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
 
-  /* Primary = Electric Purple */
-  --primary: oklch(0.72 0.16 295);
-  --primary-foreground: oklch(0.99 0.01 295);
-  --neon: oklch(0.75 0.18 295);
+  /* Primary = Valorant Red */
+  --primary: oklch(0.6 0.25 25); /* #FF4655 approx */
+  --primary-foreground: oklch(1 0 0);
 
-  /* Secondaries - Muted slate for contrast */
-  --secondary: oklch(0.3 0.03 265);
-  --secondary-foreground: oklch(0.97 0.01 265);
+  /* Secondaries - Grays for contrast */
+  --secondary: oklch(0.9 0 0);
+  --secondary-foreground: oklch(0.15 0 0);
 
-  --muted: oklch(0.28 0.03 265);
-  --muted-foreground: oklch(0.7 0.02 265);
+  --muted: oklch(0.92 0 0);
+  --muted-foreground: oklch(0.4 0 0);
 
-  --accent: oklch(0.3 0.03 265);
-  --accent-foreground: oklch(0.97 0.01 265);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.15 0 0);
 
   --destructive: oklch(0.6 0.2 25);
-  --destructive-foreground: oklch(0.99 0.01 25);
+  --destructive-foreground: oklch(1 0 0);
 
-  --success: oklch(0.72 0.15 155);
-  --success-foreground: oklch(0.14 0.02 155);
+  --success: oklch(0.7 0.15 150);
+  --success-foreground: oklch(1 0 0);
 
   --warning: oklch(0.8 0.15 80);
-  --warning-foreground: oklch(0.18 0.02 80);
+  --warning-foreground: oklch(0.15 0 0);
 
-  /* Secondary accent — Teal. Used for info badges, secondary CTAs, live/status indicators */
-  --info: oklch(0.75 0.13 195);
-  --info-foreground: oklch(0.16 0.02 195);
+  --info: oklch(0.6 0.25 25);
+  --info-foreground: oklch(1 0 0);
 
-  --border: oklch(0.32 0.03 265 / 50%);
-  --input: oklch(0.28 0.03 265);
-  --ring: oklch(0.72 0.16 295);
+  --border: oklch(0.85 0 0);
+  --input: oklch(0.85 0 0);
+  --ring: oklch(0.6 0.25 25);
 
-  /* Gradients & shadows - Toned down from neon/casino-glow to subtle professional depth */
-  --gradient-primary: linear-gradient(135deg, oklch(0.75 0.18 295), oklch(0.65 0.15 295));
-  --gradient-hero: radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      oklch(0.72 0.16 295 / 0.15),
-      transparent 60%
-    ),
-    linear-gradient(180deg, oklch(0.18 0.02 265), oklch(0.15 0.02 265));
-  --gradient-card: linear-gradient(
-    180deg,
-    oklch(0.26 0.03 265),
-    oklch(0.22 0.02 265)
-  );
-
-  --shadow-neon: 0 0 0 1px oklch(0.72 0.16 295 / 0.15),
-    0 4px 16px -4px oklch(0.72 0.16 295 / 0.15);
-  --shadow-card: 0 1px 0 0 oklch(1 1 1 / 0.04) inset,
-    0 4px 16px -4px oklch(0 0 0 / 0.3);
-  --shadow-glow: 0 2px 12px oklch(0.72 0.16 295 / 0.12);
+  /* Tactical Shadows (No glowing neons) */
+  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.5 0.2 25));
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 4px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
@@ -125,37 +104,26 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     background: var(--background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
-    /* Toned down ambient glow — subtle, not arcade-bright */
-    background-image: radial-gradient(
-        circle at 20% -10%,
-        oklch(0.72 0.16 295 / 0.03),
-        transparent 40%
-      ),
-      radial-gradient(
-        circle at 100% 0%,
-        oklch(0.65 0.15 295 / 0.02),
-        transparent 50%
-      );
-    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
     font-weight: 700;
+    text-transform: uppercase;
   }
 
   .font-display {
     font-family: var(--font-display);
+    text-transform: uppercase;
   }
   .font-mono {
     font-family: var(--font-mono);
@@ -164,43 +132,11 @@
 
 @layer utilities {
   .text-gradient-primary {
-    background: linear-gradient(135deg, oklch(0.95 0.02 295), oklch(0.75 0.18 295));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .bg-grid {
-    background-image: linear-gradient(
-        to right,
-        oklch(1 1 1 / 0.03) 1px,
-        transparent 1px
-      ),
-      linear-gradient(to bottom, oklch(1 1 1 / 0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  .glow-ring {
-    box-shadow: var(--shadow-neon);
-  }
-
-  .clip-corner {
-    clip-path: polygon(
-      12px 0,
-      100% 0,
-      100% calc(100% - 12px),
-      calc(100% - 12px) 100%,
-      0 100%,
-      0 12px
-    );
-  }
-
-  .nav-glass {
-    backdrop-filter: blur(12px);
+    color: var(--color-primary);
   }
 
   .card-accent {
-    border-top: 2px solid var(--color-primary);
+    border-top: 4px solid var(--color-primary);
   }
 
   .card-lift {
@@ -209,11 +145,6 @@
   .card-lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-glow);
-    border-color: oklch(0.72 0.16 295 / 0.4);
-  }
-
-  .grid-fade {
-    mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+    border-color: var(--color-foreground);
   }
 }

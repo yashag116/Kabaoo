@@ -11,7 +11,6 @@ import {
   Plus,
   Menu,
   X,
-  Zap,
   LogOut,
 } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
@@ -41,7 +40,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   
-  // Real database state
   const [profile, setProfile] = useState<ShellProfile | null>(null);
 
   useEffect(() => {
@@ -62,31 +60,32 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/"; // Force completely out to home page
+    window.location.href = "/"; 
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-surface">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 border-r border-border bg-surface/95 backdrop-blur transition-transform md:translate-x-0 md:static",
+          "fixed inset-y-0 left-0 z-40 w-64 border-r border-border bg-white transition-transform md:translate-x-0 md:static",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-16 items-center justify-between px-5 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-wider">
-            <span className="grid place-items-center h-8 w-8 rounded-md bg-primary text-primary-foreground">
-              <Zap className="size-4" />
-            </span>
-            KABAOO
+        <div className="flex h-20 items-center justify-between px-6 border-b border-border">
+          <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold tracking-wider text-foreground">
+             <div className="relative size-6 flex items-center justify-center">
+               <div className="absolute inset-0 bg-primary rotate-45" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 40%, 0 40%)' }} />
+               <div className="absolute inset-0 bg-primary rotate-45" style={{ clipPath: 'polygon(0 60%, 100% 60%, 100% 100%, 0 100%)' }} />
+            </div>
+             KABAOO
           </Link>
           <button className="md:hidden" onClick={() => setOpen(false)}>
             <X className="size-5" />
           </button>
         </div>
 
-        <nav className="p-3 space-y-1">
+        <nav className="p-4 space-y-1">
           {NAV.map((item) => {
             const active = pathname === item.to || pathname.startsWith(item.to + "/");
             return (
@@ -95,10 +94,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-none px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors",
                   active
-                    ? "bg-primary/15 text-foreground border-l-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/40",
+                    ? "bg-primary/10 text-primary border-l-4 border-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-surface border-l-4 border-transparent",
                 )}
               >
                 <item.icon className="size-4" />
@@ -108,77 +107,74 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="absolute bottom-0 inset-x-0 p-4 border-t border-border bg-surface">
+        <div className="absolute bottom-0 inset-x-0 p-4 border-t border-border bg-white">
           <Link to="/challenges/create">
-            <Button className="w-full gap-2 font-semibold">
+            <Button className="w-full gap-2 font-bold uppercase tracking-wider rounded-none bg-primary hover:bg-primary/90">
               <Plus className="size-4" /> Host Tournament
             </Button>
           </Link>
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 h-16 border-b border-border bg-background/80 nav-glass flex items-center justify-between px-4 md:px-8">
+        <header className="sticky top-0 z-30 h-20 border-b border-border bg-white flex items-center justify-between px-6 md:px-10 shadow-sm">
           <button className="md:hidden" onClick={() => setOpen(true)}>
-            <Menu className="size-5" />
+            <Menu className="size-6 text-foreground" />
           </button>
           
-          <div className="hidden md:block text-sm text-muted-foreground font-mono">
+          <div className="hidden md:block text-sm text-muted-foreground font-mono font-bold uppercase tracking-wider">
             {pathname}
           </div>
 
-          {/* Dynamic User Header */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {profile ? (
               <>
                 <Link
                   to="/wallet"
-                  className="hidden sm:flex items-center gap-2 px-3 h-9 rounded-md bg-surface-elevated border border-border text-sm font-mono"
+                  className="hidden sm:flex items-center gap-2 px-4 h-10 rounded-none bg-surface border border-border text-sm font-mono font-bold hover:border-primary transition-colors"
                 >
                   <Wallet className="size-4 text-primary" />
                   ₹{((profile.balance || 0) / 100).toFixed(2)}
                 </Link>
                 
-                <Link to="/profile" className="flex items-center gap-2">
+                <Link to="/profile" className="flex items-center gap-3 group">
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.display_name}`}
                     alt="avatar"
-                    className="size-9 rounded-md bg-surface-elevated border border-border"
+                    className="size-10 rounded-none bg-surface border border-border group-hover:border-primary transition-colors"
                   />
                   <div className="hidden md:block text-sm leading-tight">
-                    <div className="font-semibold">{profile.display_name}</div>
-                    <div className="text-xs text-muted-foreground">{profile.riot_id}#{profile.tagline}</div>
+                    <div className="font-bold text-foreground group-hover:text-primary transition-colors">{profile.display_name}</div>
+                    <div className="text-xs font-semibold text-muted-foreground">{profile.riot_id}#{profile.tagline}</div>
                   </div>
                 </Link>
               </>
             ) : (
-              // Loading skeleton so the header doesn't jump around while fetching
               <div className="animate-pulse flex items-center gap-3">
-                <div className="h-9 w-24 bg-surface-elevated rounded-md border border-border"></div>
-                <div className="h-9 w-32 bg-surface-elevated rounded-md border border-border"></div>
+                <div className="h-10 w-24 bg-surface rounded-none border border-border"></div>
+                <div className="h-10 w-32 bg-surface rounded-none border border-border"></div>
               </div>
             )}
 
-            {/* ALWAYS SHOW LOGOUT BUTTON (Moved outside the profile check) */}
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={handleLogout} 
-              className="text-muted-foreground hover:text-red-500 ml-2"
+              className="text-muted-foreground hover:text-white hover:bg-destructive rounded-none transition-colors ml-2"
               title="Logout"
             >
-              <LogOut className="size-4" />
+              <LogOut className="size-5" />
             </Button>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">{children}</main>
+        <main className="flex-1 p-6 md:p-10 max-w-7xl w-full mx-auto">{children}</main>
       </div>
 
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          className="fixed inset-0 z-30 bg-foreground/80 md:hidden backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
       )}
