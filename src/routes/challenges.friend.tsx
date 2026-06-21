@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { Users, Copy, CheckCircle2, ArrowRight, ShieldAlert, Swords, AlertCircle, Loader2, Globe2, Trophy, Medal, QrCode } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,17 @@ const generateCode = () => {
 
 function FriendChallengePage() {
   const navigate = useNavigate();
+
+  // Auth Guard: Bounce unauthenticated users to login instantly
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate({ to: "/auth", replace: true });
+      }
+    };
+    checkAuth();
+  }, [navigate]);
   
   // Unified Creation State
   const [fee, setFee] = useState<number | "">(500);
@@ -88,7 +99,10 @@ function FriendChallengePage() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("You must be logged in to create a tournament.");
+      if (!user) {
+        navigate({ to: "/auth" });
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -110,7 +124,7 @@ function FriendChallengePage() {
         .from("matches")
         .insert({
           creator_id: user.id,
-          type: "friend", // Identifies this as private
+          type: "friend", 
           tournament_format: format.id,
           max_players: format.players,
           current_players: 1,
@@ -184,7 +198,6 @@ function FriendChallengePage() {
         throw new Error("This lobby is already full or the match has started.");
       }
 
-      // Navigate to the lobby. The /match/$id route will handle the actual joining/payment for this user.
       navigate({ to: "/match/$id", params: { id: match.id } });
 
     } catch (err: any) {

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Swords, Users, Globe2, AlertCircle, Trophy, Medal } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,18 @@ const formatINR = (amount: number) => {
 
 function CreateChallenge() {
   const navigate = useNavigate();
+  
+  // Auth Guard: Bounce unauthenticated users to login instantly
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate({ to: "/auth", replace: true });
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
   const [fee, setFee] = useState<number | "">(500);
   const [format, setFormat] = useState(TOURNAMENT_FORMATS[0]);
   const [gameMode, setGameMode] = useState(GAME_MODES[0]);
@@ -62,7 +74,8 @@ function CreateChallenge() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error("You must be logged in to create a tournament.");
+        navigate({ to: "/auth" });
+        return;
       }
 
       const { data: profile } = await supabase
@@ -79,7 +92,6 @@ function CreateChallenge() {
 
       const prizePoolInPaise = prizePool * 100;
       
-      // 1. Create the match itself
       const { data: match, error: matchError } = await supabase
         .from("matches")
         .insert({
@@ -101,7 +113,6 @@ function CreateChallenge() {
         throw new Error("Failed to secure tournament lobby. Please try again.");
       }
 
-      // 2. Deduct the host's own entry fee immediately
       const { error: balanceError } = await supabase
         .from("profiles")
         .update({ balance: profile.balance - feeInPaise })
@@ -111,7 +122,6 @@ function CreateChallenge() {
         throw new Error("Failed to process your entry fee.");
       }
 
-      // 3. Add the host as the first participant
       const { error: participantError } = await supabase
         .from("participants")
         .insert({
