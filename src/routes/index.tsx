@@ -163,20 +163,19 @@ function Landing() {
             </div>
           </div>
 
-          {/* Right Image Slices - NEW CHAMFERED SHAPE */}
+          {/* Right Image Slices - CHAMFERED SHAPE */}
           <div className="w-full lg:w-[50%] flex justify-end h-[450px] xl:h-[550px] mb-12 lg:mb-0">
             <div className="flex gap-2 lg:gap-3 h-full">
               {SLICES.map((src, i) => (
                 <div
                   key={i}
                   className="w-[70px] sm:w-[90px] xl:w-[110px] h-full relative overflow-hidden group hover:w-[170px] xl:hover:w-[210px] transition-all duration-500 ease-out bg-black/5"
-                  // This polygon cuts ONLY the top-left and bottom-right corners
+                  // Chamfers top-left and bottom-right corners; angled cuts on the other two corners lean the slice right
                   style={{ clipPath: 'polygon(24px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 24px)' }}
                 >
                   <img
                     src={src}
                     alt={`Hero Slice ${i + 1}`}
-                    // Removed width hacks. Standard object-cover now perfectly centers it.
                     className="absolute inset-0 w-full h-full object-cover object-center grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
                   />
                   {/* Subtle inner border to crisp up the cut edges */}
@@ -254,8 +253,8 @@ function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-0 border border-black/10 bg-[#F8F9FA]">
             {STEPS.map((s, index) => (
-              <div key={s.n} className="bg-white p-10 border border-black/10 hover:border-[#FF4655] transition-colors relative group min-h-[300px] flex flex-col justify-end">
-                <div className="absolute top-4 left-6 font-display text-[8rem] font-black text-[#111] opacity-5 leading-none select-none pointer-events-none">
+              <div key={s.n} className="bg-white p-10 border border-black/10 hover:border-[#FF4655] transition-all duration-500 ease-out relative group min-h-[300px] flex flex-col justify-end hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] hover:z-20">
+                <div className="absolute top-4 left-6 font-display text-[8rem] font-black text-[#111] opacity-5 leading-none select-none pointer-events-none transition-all duration-500 ease-out group-hover:-translate-y-4">
                   {s.n}
                 </div>
                 <div className="absolute top-8 right-8 size-1.5 bg-transparent group-hover:bg-[#FF4655] transition-colors" />
@@ -282,8 +281,8 @@ function Landing() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-colors relative group shadow-sm">
-              <div className="absolute top-8 right-8 flex items-center justify-center opacity-20 group-hover:opacity-100 transition-opacity">
+            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-all duration-500 ease-out relative group shadow-sm hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)]">
+              <div className="absolute top-8 right-8 flex items-center justify-center opacity-20 group-hover:opacity-100 transition-all duration-500 ease-out group-hover:-translate-y-1">
                 <div className="size-12 rounded-none border-[1px] border-[#111] flex items-center justify-center">
                   <div className="size-6 rounded-none border-[1px] border-[#111] flex items-center justify-center">
                     <div className="size-1.5 bg-[#FF4655]" />
@@ -294,8 +293,8 @@ function Landing() {
               <p className="text-sm text-gray-600 font-medium leading-relaxed">Find an opponent in seconds, not minutes. Our API instantly pairs active lobbies.</p>
             </div>
 
-            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-colors relative group shadow-sm">
-              <div className="absolute top-8 right-8 flex flex-col gap-1.5 opacity-20 group-hover:opacity-100 transition-opacity">
+            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-all duration-500 ease-out relative group shadow-sm hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)]">
+              <div className="absolute top-8 right-8 flex flex-col gap-1.5 opacity-20 group-hover:opacity-100 transition-all duration-500 ease-out group-hover:-translate-y-1">
                  <div className="w-12 h-3 border border-[#111]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
                  <div className="w-12 h-3 border border-[#111]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
                  <div className="w-12 h-3 bg-[#FF4655]" style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }} />
@@ -304,8 +303,8 @@ function Landing() {
               <p className="text-sm text-gray-600 font-medium leading-relaxed">Transparent prize pools, fair matchmaking, and verified results for every participant.</p>
             </div>
 
-            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-colors relative group shadow-sm">
-              <div className="absolute top-8 right-8 w-12 h-12 opacity-20 group-hover:opacity-100 transition-opacity">
+            <div className="bg-white border border-black/10 p-10 hover:border-[#FF4655] transition-all duration-500 ease-out relative group shadow-sm hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)]">
+              <div className="absolute top-8 right-8 w-12 h-12 opacity-20 group-hover:opacity-100 transition-all duration-500 ease-out group-hover:-translate-y-1">
                 <div className="absolute top-0 left-0 w-6 h-6 border-t-[2px] border-l-[2px] border-[#111]" />
                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-[2px] border-r-[2px] border-[#111]" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-2 bg-[#FF4655]" />
