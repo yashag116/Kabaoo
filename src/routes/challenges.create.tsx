@@ -52,6 +52,7 @@ function CreateChallenge() {
   const [format, setFormat] = useState(TOURNAMENT_FORMATS[0]);
   const [gameMode, setGameMode] = useState(GAME_MODES[0]);
   const [description, setDescription] = useState("");
+  const [partyCode, setPartyCode] = useState("");
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -62,6 +63,11 @@ function CreateChallenge() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (currentFee <= 0) return;
+
+    if (!partyCode.trim()) {
+      setErrorMsg("Please enter your Valorant party code.");
+      return;
+    }
     
     setLoading(true);
     setErrorMsg("");
@@ -98,6 +104,7 @@ function CreateChallenge() {
           entry_fee: feeInPaise,
           prize_pool: prizePoolInPaise,
           description: description || null,
+          party_code: partyCode.trim().toUpperCase(),
           status: "waiting" 
         })
         .select("id")
@@ -172,6 +179,22 @@ function CreateChallenge() {
                 {GAME_MODES.map(mode => <option key={mode} value={mode}>{mode}</option>)}
               </select>
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="party-code" className="block mb-2">Valorant Party Code</Label>
+            <Input
+              id="party-code"
+              placeholder="e.g. ABCDEF"
+              required
+              value={partyCode}
+              onChange={(e) => setPartyCode(e.target.value.toUpperCase())}
+              className="font-mono uppercase max-w-xs transition-all focus-visible:border-primary"
+              maxLength={6}
+            />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              Players will see this code once the lobby is fully matched, so they can join your in-game party.
+            </p>
           </div>
 
           <div className="h-px w-full bg-border/50" />

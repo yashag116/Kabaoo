@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,7 +63,6 @@ function AuthPage() {
     setRegSuccess("");
     setRegLoading(true);
 
-    // 1. Validate the Riot ID with Riot Games API first
    const riotCheck = await verifyRiotAccount({ data: { riotId, tagline } });
     
     if (!riotCheck.success) {
@@ -73,7 +71,6 @@ function AuthPage() {
       return;
     }
 
-    // 2. If Riot confirms it exists, create the Supabase Account
     const { error } = await supabase.auth.signUp({
       email: regEmail,
       password: regPassword,
@@ -82,20 +79,18 @@ function AuthPage() {
           display_name: username,
           riot_id: riotId,
           tagline: tagline,
-          riot_puuid: riotCheck.puuid, // Saving Riot's internal hidden ID for stats
+          riot_puuid: riotCheck.puuid, 
         },
       },
     });
 
     setRegLoading(false);
 
-    // 3. Handle Errors
     if (error) {
       setRegError(error.message);
       return;
     }
 
-    // 4. Clear the form on success
     setUsername("");
     setRegEmail("");
     setRegPassword("");
@@ -111,12 +106,12 @@ function AuthPage() {
       <div className="relative hidden md:flex flex-col justify-between p-12 border-r border-border overflow-hidden">
         <div className="absolute inset-0 [background:var(--gradient-hero)]" />
         <div className="absolute inset-0 bg-grid opacity-30" />
-        <Link to="/" className="relative flex items-center gap-2 font-display text-xl font-bold tracking-wider">
-          <span className="grid place-items-center h-9 w-9 rounded-md bg-primary text-primary-foreground">
-            <Zap className="size-5" />
-          </span>
-          KABAOO
+        
+        {/* MASSIVE DESKTOP LOGO */}
+        <Link to="/" className="relative flex items-center">
+          <img src="/Kabaoo.png" alt="Kabaoo" className="h-16 lg:h-20 object-contain" />
         </Link>
+
         <div className="relative">
           <div className="text-xs uppercase tracking-[0.25em] text-primary font-semibold mb-3">
             Skill-based · Real money
@@ -137,11 +132,10 @@ function AuthPage() {
       {/* Right form */}
       <div className="flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-md">
-          <Link to="/" className="md:hidden flex items-center gap-2 font-display text-lg font-bold tracking-wider mb-8">
-            <span className="grid place-items-center h-8 w-8 rounded-md bg-primary text-primary-foreground">
-              <Zap className="size-4" />
-            </span>
-            KABAOO
+          
+          {/* MASSIVE MOBILE LOGO */}
+          <Link to="/" className="md:hidden flex items-center mb-10">
+            <img src="/Kabaoo.png" alt="Kabaoo" className="h-12 md:h-14 object-contain" />
           </Link>
 
           <Tabs defaultValue="login">
@@ -150,7 +144,6 @@ function AuthPage() {
               <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
 
-            {/* LOGIN TAB */}
             <TabsContent value="login" className="mt-6">
               <h2 className="font-display text-2xl font-bold">Welcome back</h2>
               <p className="text-sm text-muted-foreground mt-1">Log in to claim your next match.</p>
@@ -191,7 +184,6 @@ function AuthPage() {
               <SocialButtons />
             </TabsContent>
 
-            {/* REGISTER TAB */}
             <TabsContent value="register" className="mt-6">
               <h2 className="font-display text-2xl font-bold">Create your account</h2>
               <p className="text-sm text-muted-foreground mt-1">Link your Riot ID and start earning.</p>

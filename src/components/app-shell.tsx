@@ -64,28 +64,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-surface">
-      {/* Sidebar */}
+    <div className="min-h-screen flex bg-[#F8F9FA]">
+      {/* Sidebar - NOW LOCKED ON DESKTOP */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 border-r border-border bg-white transition-transform md:translate-x-0 md:static",
+          "fixed inset-y-0 left-0 z-40 w-64 border-r border-border bg-white transition-transform md:translate-x-0 md:sticky md:top-0 md:h-screen flex flex-col",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-20 items-center justify-between px-6 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold tracking-wider text-foreground">
-             <div className="relative size-6 flex items-center justify-center">
-               <div className="absolute inset-0 bg-primary rotate-45" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 40%, 0 40%)' }} />
-               <div className="absolute inset-0 bg-primary rotate-45" style={{ clipPath: 'polygon(0 60%, 100% 60%, 100% 100%, 0 100%)' }} />
-            </div>
-             KABAOO
+        <div className="flex h-24 items-center justify-between px-6 border-b border-border shrink-0">
+          <Link to="/" className="flex items-center">
+            <img src="/Kabaoo.png" alt="Kabaoo" className="h-12 md:h-14 lg:h-16 object-contain" />
           </Link>
           <button className="md:hidden" onClick={() => setOpen(false)}>
             <X className="size-5" />
           </button>
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-1 flex-1 overflow-y-auto">
           {NAV.map((item) => {
             const active = pathname === item.to || pathname.startsWith(item.to + "/");
             return (
@@ -96,8 +92,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className={cn(
                   "flex items-center gap-3 rounded-none px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors",
                   active
-                    ? "bg-primary/10 text-primary border-l-4 border-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-surface border-l-4 border-transparent",
+                    ? "bg-[#FF4655]/10 text-[#FF4655] border-l-4 border-[#FF4655]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-black/5 border-l-4 border-transparent",
                 )}
               >
                 <item.icon className="size-4" />
@@ -107,9 +103,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="absolute bottom-0 inset-x-0 p-4 border-t border-border bg-white">
+        <div className="p-4 border-t border-border bg-white shrink-0">
           <Link to="/challenges/create">
-            <Button className="w-full gap-2 font-bold uppercase tracking-wider rounded-none bg-primary hover:bg-primary/90">
+            <Button className="w-full gap-2 font-bold uppercase tracking-wider rounded-none bg-[#FF4655] hover:bg-[#e03e4b] text-white">
               <Plus className="size-4" /> Host Tournament
             </Button>
           </Link>
@@ -118,10 +114,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 h-20 border-b border-border bg-white flex items-center justify-between px-6 md:px-10 shadow-sm">
-          <button className="md:hidden" onClick={() => setOpen(true)}>
-            <Menu className="size-6 text-foreground" />
-          </button>
+        <header className="sticky top-0 z-30 h-24 border-b border-border bg-white/80 backdrop-blur-md flex items-center justify-between px-6 md:px-10 shadow-sm">
+          <div className="flex items-center gap-4">
+             <button className="md:hidden" onClick={() => setOpen(true)}>
+               <Menu className="size-6 text-foreground" />
+             </button>
+             <Link to="/" className="md:hidden flex items-center">
+               <img src="/Kabaoo.png" alt="Kabaoo" className="h-10 object-contain" />
+             </Link>
+          </div>
           
           <div className="hidden md:block text-sm text-muted-foreground font-mono font-bold uppercase tracking-wider">
             {pathname}
@@ -132,9 +133,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <>
                 <Link
                   to="/wallet"
-                  className="hidden sm:flex items-center gap-2 px-4 h-10 rounded-none bg-surface border border-border text-sm font-mono font-bold hover:border-primary transition-colors"
+                  className="hidden sm:flex items-center gap-2 px-4 h-10 rounded-none bg-black/5 border border-black/10 text-sm font-mono font-bold hover:border-[#FF4655] transition-colors"
                 >
-                  <Wallet className="size-4 text-primary" />
+                  <Wallet className="size-4 text-[#FF4655]" />
                   ₹{((profile.balance || 0) / 100).toFixed(2)}
                 </Link>
                 
@@ -142,18 +143,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.display_name}`}
                     alt="avatar"
-                    className="size-10 rounded-none bg-surface border border-border group-hover:border-primary transition-colors"
+                    className="size-10 rounded-none bg-black/5 border border-black/10 group-hover:border-[#FF4655] transition-colors"
                   />
                   <div className="hidden md:block text-sm leading-tight">
-                    <div className="font-bold text-foreground group-hover:text-primary transition-colors">{profile.display_name}</div>
+                    <div className="font-bold text-foreground group-hover:text-[#FF4655] transition-colors">{profile.display_name}</div>
                     <div className="text-xs font-semibold text-muted-foreground">{profile.riot_id}#{profile.tagline}</div>
                   </div>
                 </Link>
               </>
             ) : (
               <div className="animate-pulse flex items-center gap-3">
-                <div className="h-10 w-24 bg-surface rounded-none border border-border"></div>
-                <div className="h-10 w-32 bg-surface rounded-none border border-border"></div>
+                <div className="h-10 w-24 bg-black/5 rounded-none border border-black/10"></div>
+                <div className="h-10 w-32 bg-black/5 rounded-none border border-black/10"></div>
               </div>
             )}
 
@@ -161,7 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               variant="ghost" 
               size="icon" 
               onClick={handleLogout} 
-              className="text-muted-foreground hover:text-white hover:bg-destructive rounded-none transition-colors ml-2"
+              className="text-muted-foreground hover:text-white hover:bg-red-500 rounded-none transition-colors ml-2"
               title="Logout"
             >
               <LogOut className="size-5" />
@@ -174,7 +175,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-foreground/80 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 z-30 bg-black/60 md:hidden backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
       )}

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { supabase } from "@/lib/supabase";
-import { Loader2, ShieldAlert, UserPlus, Swords, AlertCircle, CheckCircle2, Crown, Trophy, Medal, Copy, Users } from "lucide-react";
+import { Loader2, ShieldAlert, UserPlus, Swords, AlertCircle, CheckCircle2, Crown, Trophy, Medal, Copy, Users, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,7 @@ function MatchLobby() {
   const [actionError, setActionError] = useState("");
   const [toastMsg, setToastMsg] = useState("");
   const [copied, setCopied] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   const loadMatch = async () => {
     try {
@@ -71,6 +72,13 @@ function MatchLobby() {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyPartyCode = () => {
+    if (!match?.party_code) return;
+    navigator.clipboard.writeText(match.party_code);
+    setCodeCopied(true);
+    setTimeout(() => setCodeCopied(false), 2000);
   };
 
   const handleJoinMatch = async () => {
@@ -170,6 +178,12 @@ function MatchLobby() {
   const isTeam1Full = team1.length >= teamSize;
   const isTeam2Full = team2.length >= teamSize;
   const placedParticipants = participants.filter((p) => p.placement);
+
+  const isMatchReady = isDuelFormat 
+    ? participants.length === 2 
+    : isFFAFormat 
+      ? isFull 
+      : isTeam1Full && isTeam2Full;
 
   const renderActionPanel = () => {
     if (match.status === 'completed' || (isTeam1Full && isTeam2Full)) return null;
@@ -408,8 +422,27 @@ function MatchLobby() {
             </div>
           )}
 
+          {/* PARTY CODE REVEAL — once everyone required has joined and paid */}
+          {isMatchReady && isJoined && match.party_code && match.status !== 'completed' && (
+            <div className="mt-8 rounded-lg border-2 border-primary bg-primary/10 p-6 text-center shadow-[var(--shadow-glow)] animate-in fade-in slide-in-from-bottom-4">
+              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] text-primary font-bold mb-2">
+                <KeyRound className="size-3.5" /> Valorant Party Code
+              </div>
+              <div className="font-display text-4xl font-bold tracking-widest text-foreground select-all">
+                {match.party_code}
+              </div>
+              <p className="text-sm text-muted-foreground mt-3 max-w-sm mx-auto mb-4">
+                All players are confirmed and entry fees secured. Join the host's party using this code to begin your match.
+              </p>
+              <Button onClick={handleCopyPartyCode} variant="outline" size="sm" className="gap-2 bg-background/50 backdrop-blur card-lift">
+                {codeCopied ? <CheckCircle2 className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
+                {codeCopied ? "Copied!" : "Copy Code"}
+              </Button>
+            </div>
+          )}
+
           {/* DEVELOPER TOOLS WITH DYNAMIC BUTTONS */}
-          {isFull && match.status === 'in_progress' && currentUser?.email === "admin@kabaoo.com" && (
+          {isFull && match.status !== 'completed' && (currentUser?.email === "admin@kabaoo.com" || currentUser?.id === match.creator_id) && (
             <div className="mt-8 p-4 rounded-lg border border-[#eab308]/30 bg-[#eab308]/10 text-center animate-in fade-in slide-in-from-bottom-4 transition-all duration-300 hover:border-[#eab308]/50">
               <p className="text-xs text-[#eab308] mb-3 uppercase tracking-widest font-bold">🛠️ Developer Override: Assign Placements</p>
               <div className="flex flex-wrap gap-2 justify-center">
